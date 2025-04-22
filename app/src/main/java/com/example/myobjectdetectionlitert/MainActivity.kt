@@ -1,47 +1,62 @@
 package com.example.myobjectdetectionlitert
 
+import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.myobjectdetectionlitert.ui.theme.MyObjectDetectionLiteRTTheme
+import androidx.compose.runtime.LaunchedEffect
+import com.example.myobjectdetectionlitert.model.TFLiteHelper
+import com.example.myobjectdetectionlitert.ui.CameraScreen
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
 class MainActivity : ComponentActivity() {
+    private lateinit var tfliteHelper: TFLiteHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        // Initialize TFLiteHelper
+        try {
+            tfliteHelper = TFLiteHelper(this)
+            Log.d("MainActivity", "TFLiteHelper initialized successfully")
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error initializing TFLiteHelper", e)
+        }
+
         setContent {
-            MyObjectDetectionLiteRTTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            MaterialTheme {
+                Surface {
+                    RequestCameraPermission {
+                        // Show Camera Screen with TFLite processing
+                        CameraScreen(tfliteHelper)
+                    }
                 }
             }
         }
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun RequestCameraPermission(onPermissionGranted: @Composable () -> Unit) {
+    val permissionState = rememberPermissionState(Manifest.permission.CAMERA)
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MyObjectDetectionLiteRTTheme {
-        Greeting("Android")
+    LaunchedEffect(permissionState.status) {
+        if (!permissionState.status.isGranted) {
+            permissionState.launchPermissionRequest()
+        }
+    }
+
+    if (permissionState.status.isGranted) {
+        onPermissionGranted()
+    } else {
+        Text(text = "Camera permission is required!")
     }
 }
