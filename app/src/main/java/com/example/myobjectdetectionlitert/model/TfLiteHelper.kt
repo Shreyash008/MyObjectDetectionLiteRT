@@ -155,7 +155,7 @@ class TFLiteHelper(context: Context) {
 
     private fun processYoloOutput(outputArray: Array<Array<Array<FloatArray>>>): List<Detection> {
         // This is a placeholder for standard YOLOv5 grid-based output processing
-        // Implementation would depend on your specific model's output format
+        // Implementation would depend on specific model's output format
         Log.d("TFLiteHelper", "Standard YOLOv5 output format detected - " +
                 "this requires custom post-processing")
         return emptyList()
@@ -176,7 +176,6 @@ class TFLiteHelper(context: Context) {
             for (detection in sorted) {
                 var shouldSelect = true
 
-                // Check if this detection overlaps too much with any selected detection
                 for (selectedDetection in selected) {
                     val iou = calculateIoU(detection, selectedDetection)
                     if (iou > 0.45f) {  // IoU threshold

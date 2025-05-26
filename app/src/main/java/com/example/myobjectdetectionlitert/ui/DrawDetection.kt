@@ -27,14 +27,14 @@ package com.example.myobjectdetectionlitert.ui
 //            val right = detection.x + detection.width
 //            val bottom = detection.y + detection.height
 //
-//            // Draw rectangle
+//
 //            drawRect(
 //                color = Color.Red,
 //                topLeft = androidx.compose.ui.geometry.Offset(left, top),
 //                size = androidx.compose.ui.geometry.Size(detection.width, detection.height)
 //            )
 //
-//            // Draw text (object name)
+//
 //            drawIntoCanvas { canvas ->
 //                canvas.nativeCanvas.drawText(label, left, top - 10, textPaint)
 //            }
